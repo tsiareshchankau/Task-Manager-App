@@ -4,25 +4,26 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import {
-    Alert,
-    FlatList,
-    RefreshControl,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  Platform,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { Task } from '../api/todoApi';
 import EmptyState from '../components/EmptyState';
 import TaskItem from '../components/TaskItem';
-import { useTodos } from '../hooks/useTodos';
+import { useTaskContext } from '../context/TaskProvider';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export default function Home() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
-  const { tasks, loading, error, toggleTask, deleteTask, refresh } = useTodos();
+  const { tasks, loading, error, toggleTask, deleteTask, refresh } = useTaskContext();
 
   const handleAddTask = () => {
     navigation.navigate('AddTask');
@@ -33,6 +34,12 @@ export default function Home() {
   };
 
   const handleDeleteTask = (id: string) => {
+    if (Platform.OS === 'web') {
+      if (window.confirm('Are you sure you want to delete this task?')) {
+        deleteTask(id);
+      }
+      return;
+    } 
     Alert.alert(
       'Delete Task',
       'Are you sure you want to delete this task?',
@@ -116,10 +123,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   headerButton: {
-    marginRight: 16,
-    padding: 8,
     minWidth: 44,
-    minHeight: 44,
     justifyContent: 'center',
     alignItems: 'center',
   },

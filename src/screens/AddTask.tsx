@@ -4,24 +4,24 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useTodos } from '../hooks/useTodos';
+import { useTaskContext } from '../context/TaskProvider';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type AddTaskScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddTask'>;
 
 export default function AddTask() {
   const navigation = useNavigation<AddTaskScreenNavigationProp>();
-  const { addTask } = useTodos();
+  const { addTask } = useTaskContext();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -167,10 +167,8 @@ const styles = StyleSheet.create({
     color: '#999',
   },
   headerButton: {
-    marginLeft: 16,
-    padding: 8,
     minWidth: 44,
-    minHeight: 44,
+    padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },

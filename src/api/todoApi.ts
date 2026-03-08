@@ -28,7 +28,7 @@ async function fetchWithTimeoutAndRetry(url: string, options: RequestInit = {}, 
     return response;
   } catch (error) {
     clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
+    if ((error as Error).name === 'AbortError') {
       throw new Error('Request timed out');
     }
     // Retry once
@@ -47,7 +47,7 @@ async function fetchWithTimeoutAndRetry(url: string, options: RequestInit = {}, 
 /**
  * Fetches the first 10 todos from dummyjson.com, maps to internal Task model.
  */
-export async function fetchInitialTodos(): Promise<Task[]> {
+export async function fetchInitialTasks(): Promise<Task[]> {
   const url = 'https://dummyjson.com/todos?limit=10';
   const response = await fetchWithTimeoutAndRetry(url);
 

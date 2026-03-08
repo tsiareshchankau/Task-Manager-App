@@ -4,15 +4,16 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useTodos } from '../hooks/useTodos';
+import { useTaskContext } from '../context/TaskProvider';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type TaskDetailsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'TaskDetails'>;
@@ -22,7 +23,7 @@ export default function TaskDetails() {
   const navigation = useNavigation<TaskDetailsScreenNavigationProp>();
   const route = useRoute<TaskDetailsScreenRouteProp>();
   const { id } = route.params;
-  const { tasks, toggleTask, updateTask, deleteTask } = useTodos();
+  const { tasks, toggleTask, updateTask, deleteTask } = useTaskContext();
 
   const task = useMemo(() => tasks.find(t => t.id === id), [tasks, id]);
 
@@ -66,6 +67,12 @@ export default function TaskDetails() {
   };
 
   const handleDelete = () => {
+    if (Platform.OS === 'web') {
+      if (window.confirm('Are you sure you want to delete this task?')) {
+        deleteTask(id);
+      }
+      return;
+    } 
     Alert.alert(
       'Delete Task',
       'Are you sure you want to delete this task?',
