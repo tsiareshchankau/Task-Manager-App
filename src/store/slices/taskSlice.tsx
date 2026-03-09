@@ -48,7 +48,7 @@ const taskSlice = createSlice({
         completed: action.payload.completed || false,
         createdAt: new Date().toISOString(),
       };
-      state.tasks.push(newTask);
+      state.tasks.unshift(newTask);
     },
     toggleTask: (state, action: PayloadAction<string>) => {
       const task = state.tasks.find((t) => t.id === action.payload);
