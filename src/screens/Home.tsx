@@ -2,7 +2,7 @@
 
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import {
   Alert,
   FlatList,
@@ -13,17 +13,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Task } from '../api/todoApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { Task } from '../types';
 import EmptyState from '../components/EmptyState';
 import TaskItem from '../components/TaskItem';
-import { useTaskContext } from '../context/TaskProvider';
+import { loadDummyTasks, toggleTask, deleteTask } from '../store/slices/taskSlice';
+import { RootState } from '../store/store';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export default function Home() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
-  const { tasks, loading, error, toggleTask, deleteTask, refresh } = useTaskContext();
+  const dispatch = useDispatch();
+  const { tasks, seeded, loading } = useSelector((state: RootState) => state.tasks);
+
+  useEffect(() => {
+    if (!seeded) {
+      dispatch(loadDummyTasks());
+    }
+  }, [seeded, dispatch]);
 
   const handleAddTask = () => {
     navigation.navigate('AddTask');
@@ -36,7 +45,7 @@ export default function Home() {
   const handleDeleteTask = (id: string) => {
     if (Platform.OS === 'web') {
       if (window.confirm('Are you sure you want to delete this task?')) {
-        deleteTask(id);
+        dispatch(deleteTask(id));
       }
       return;
     } 
@@ -48,13 +57,13 @@ export default function Home() {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => deleteTask(id),
+          onPress: () => dispatch(deleteTask(id)),
         },
       ]
     );
   };
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
@@ -69,25 +78,6 @@ export default function Home() {
     });
   }, [navigation, handleAddTask]);
 
-  if (loading && tasks.length === 0) {
-    return (
-      <View style={styles.center}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (error && tasks.length === 0) {
-    return (
-      <View style={styles.center}>
-        <Text>Error: {error}</Text>
-        <TouchableOpacity onPress={refresh} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>Retry</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -96,13 +86,13 @@ export default function Home() {
         renderItem={({ item }) => (
           <TaskItem
             task={item}
-            onToggle={() => toggleTask(item.id)}
+            onToggle={() => dispatch(toggleTask(item.id))}
             onDelete={() => handleDeleteTask(item.id)}
             onPress={() => handleTaskPress(item)}
           />
         )}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refresh} />
+          <RefreshControl refreshing={loading} onRefresh={() => dispatch(loadDummyTasks())} />
         }
         ListEmptyComponent={<EmptyState onAddTask={handleAddTask} />}
         contentContainerStyle={tasks.length === 0 ? styles.emptyList : undefined}

@@ -14,14 +14,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useTaskContext } from '../context/TaskProvider';
+import { useDispatch } from 'react-redux';
+import { addTask } from '../store/slices/taskSlice';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type AddTaskScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddTask'>;
 
 export default function AddTask() {
   const navigation = useNavigation<AddTaskScreenNavigationProp>();
-  const { addTask } = useTaskContext();
+  const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -31,10 +32,10 @@ export default function AddTask() {
       return;
     }
 
-    addTask({
+    dispatch(addTask({
       title: title.trim(),
       description: description.trim() || undefined,
-    });
+    }));
 
     navigation.goBack();
   };

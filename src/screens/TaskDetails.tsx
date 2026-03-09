@@ -13,7 +13,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useTaskContext } from '../context/TaskProvider';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleTask, updateTask, deleteTask } from '../store/slices/taskSlice';
+import { RootState } from '../store/store';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type TaskDetailsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'TaskDetails'>;
@@ -23,7 +25,8 @@ export default function TaskDetails() {
   const navigation = useNavigation<TaskDetailsScreenNavigationProp>();
   const route = useRoute<TaskDetailsScreenRouteProp>();
   const { id } = route.params;
-  const { tasks, toggleTask, updateTask, deleteTask } = useTaskContext();
+  const dispatch = useDispatch();
+  const tasks = useSelector((state: RootState) => state.tasks.tasks);
 
   const task = useMemo(() => tasks.find(t => t.id === id), [tasks, id]);
 
@@ -40,7 +43,7 @@ export default function TaskDetails() {
 
   const handleToggle = () => {
     if (task) {
-      toggleTask(task.id);
+      dispatch(toggleTask(task.id));
     }
   };
 
@@ -50,10 +53,10 @@ export default function TaskDetails() {
 
   const handleSave = () => {
     if (task && editTitle.trim()) {
-      updateTask(task.id, {
+      dispatch(updateTask({ id: task.id, changes: {
         title: editTitle.trim(),
         description: editDescription.trim() || undefined,
-      });
+      } }));
       setIsEditing(false);
     } else {
       Alert.alert('Error', 'Title is required');
@@ -69,7 +72,8 @@ export default function TaskDetails() {
   const handleDelete = () => {
     if (Platform.OS === 'web') {
       if (window.confirm('Are you sure you want to delete this task?')) {
-        deleteTask(id);
+        dispatch(deleteTask(id));
+        navigation.goBack();
       }
       return;
     } 
@@ -82,7 +86,7 @@ export default function TaskDetails() {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
-            deleteTask(id);
+            dispatch(deleteTask(id));
             navigation.goBack();
           },
         },
