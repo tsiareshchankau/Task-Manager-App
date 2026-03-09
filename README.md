@@ -2,6 +2,8 @@
 
 A simple task management application built with React Native and Expo. This app allows users to create, view, edit, and delete tasks, with persistent storage using Redux and AsyncStorage.
 
+[DEMO](https://drive.google.com/file/d/1OADYldbm1DfKWPqVn6dEuQduW-uR-hB-/view?usp=sharing) 
+
 ## Setup Instructions
 
 ### Prerequisites
