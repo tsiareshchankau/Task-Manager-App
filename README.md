@@ -117,6 +117,13 @@ This app was architected with **modularity and extensibility** as primary concer
 
 ## What Can Be Improved with More Time
 
+### Technical Improvements
+
+- **Isolated component development**: Component library with documented, accessible, and themeable primitives; Storybook integration for interactive development and documentation; visual regression tests for UI stability.
+- **Testing**: Redux reducers and selectors are pure functions, trivial to unit test; integration tests via async thunks
+- **Error Handling**: Add error boundary components + enhanced Redux error middleware
+- **Telemetry**: for analytics and crash reporting
+  
 ### Features 
 
 - **Search and Filtering**: Add `filterSlice` for UI state, extend `Home` screen with search logic
@@ -128,11 +135,4 @@ This app was architected with **modularity and extensibility** as primary concer
 - **Drag and Drop**: Reorder tasks using `react-native-gesture-handler` (already installed)
 - **Bulk Operations**: New reducer in `taskSlice` for batch operations
 
-### Technical Improvements
-
-The Redux architecture makes these straightforward to implement:
-
-- **Testing**: Redux reducers and selectors are pure functions, trivial to unit test; integration tests via async thunks
-- **Error Handling**: Add error boundary components + enhanced Redux error middleware
-- **Telemetry**: for analytics and crash reporting
 
